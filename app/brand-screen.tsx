@@ -1,6 +1,8 @@
-import React from 'react';
-import { View, Text, TextInput, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import SidebarNavigation from './components/SidebarNavigation';
+import LuxuryItemsDisplay from './components/LuxuryItemsDisplay';
 
 const BRAND_CATEGORIES = [
   {
@@ -35,6 +37,9 @@ const BRAND_CATEGORIES = [
 const ALPHABET = 'ABCDEFGHJKLMPRSTY'.split('');
 
 export default function BrandScreen() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
@@ -46,6 +51,8 @@ export default function BrandScreen() {
             style={styles.searchInput}
             placeholder="请输入品牌名称"
             placeholderTextColor="#999"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
           />
         </View>
         <TouchableOpacity style={styles.searchButton}>
@@ -53,27 +60,17 @@ export default function BrandScreen() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.content}>
-        {/* Hot Brands Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>热门品牌</Text>
-          <View style={styles.brandGrid}>
-            {BRAND_CATEGORIES.map((category, index) => (
-              <View key={index} style={styles.categoryRow}>
-                <Text style={styles.categoryTitle}>{category.title}</Text>
-                <View style={styles.brandRow}>
-                  {category.brands.map((brand, brandIndex) => (
-                    <TouchableOpacity key={brandIndex} style={styles.brandItem}>
-                      <View style={[styles.brandImage, { backgroundColor: brand.color }]}>
-                        <Text style={styles.brandInitial}>{brand.name.charAt(0)}</Text>
-                      </View>
-                      <Text style={styles.brandName}>{brand.name}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </View>
-            ))}
-          </View>
+      {/* Main Content with Sidebar */}
+      <View style={styles.mainContent}>
+        {/* Sidebar Navigation */}
+        <SidebarNavigation 
+          selectedCategory={selectedCategory}
+          onSelectCategory={setSelectedCategory}
+        />
+        
+        {/* Luxury Items Display */}
+        <View style={styles.contentArea}>
+          <LuxuryItemsDisplay category={selectedCategory} />
         </View>
 
         {/* Alphabet Index */}
@@ -84,7 +81,7 @@ export default function BrandScreen() {
             </TouchableOpacity>
           ))}
         </View>
-      </ScrollView>
+      </View>
     </View>
   );
 }
@@ -120,51 +117,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
   },
-  content: {
+  mainContent: {
     flex: 1,
-  },
-  section: {
-    padding: 15,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 15,
-  },
-  brandGrid: {
-    gap: 20,
-  },
-  categoryRow: {
-    marginBottom: 20,
-  },
-  categoryTitle: {
-    fontSize: 16,
-    marginBottom: 10,
-  },
-  brandRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
   },
-  brandItem: {
-    alignItems: 'center',
-    width: '23%',
-  },
-  brandImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 10,
-    marginBottom: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  brandInitial: {
-    color: '#FFFFFF',
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  brandName: {
-    fontSize: 12,
-    textAlign: 'center',
+  contentArea: {
+    flex: 1,
   },
   alphabetIndex: {
     position: 'absolute',
